@@ -36,6 +36,19 @@
             overflow: hidden;
         }
 
+        .room {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+
+        .room.active {
+            display: block;
+        }
+
         .window {
             position: absolute;
             top: 25px;
@@ -204,6 +217,130 @@
             border-radius: 0 6px 6px 0;
         }
 
+        /* Room Two Styles */
+        .bed {
+            position: absolute;
+            top: 35px;
+            left: 20px;
+            width: 130px;
+            height: 110px;
+            background: #4a3b5c;
+            border-radius: 10px;
+            border: 3px solid #6b5382;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 10px;
+            transition: transform 0.2s;
+        }
+
+        .bed:active {
+            transform: scale(0.97);
+        }
+
+        .pillow {
+            width: 50px;
+            height: 25px;
+            background: #d8b4fe;
+            border-radius: 6px;
+        }
+
+        .bedsheet {
+            margin-top: 10px;
+            width: 110px;
+            height: 60px;
+            background: #7c3aed;
+            border-radius: 6px;
+        }
+
+        .pc-desk {
+            position: absolute;
+            bottom: 45px;
+            right: 20px;
+            width: 160px;
+            height: 22px;
+            background: #5c4a3b;
+            border-radius: 5px;
+            box-shadow: 0 6px 0 #3b2f25;
+        }
+
+        .pc-monitor {
+            position: absolute;
+            bottom: 67px;
+            right: 50px;
+            width: 70px;
+            height: 48px;
+            background: #a3a3a3;
+            border: 3px solid #737373;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .pc-monitor:active {
+            transform: scale(0.95);
+        }
+
+        .monitor-screen {
+            width: 58px;
+            height: 36px;
+            background: #0f172a;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #38bdf8;
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .animal {
+            position: absolute;
+            cursor: pointer;
+            transition: transform 0.2s;
+            -webkit-tap-highlight-color: transparent;
+            font-size: 24px;
+        }
+
+        .animal:active {
+            transform: scale(0.9);
+        }
+
+        .doggo1 { bottom: 50px; left: 165px; }
+        .doggo2 { bottom: 50px; left: 200px; }
+        .cat1 { bottom: 115px; right: 100px; }
+        .cat2 { bottom: 50px; right: 125px; }
+        .bird1 { top: 35px; right: 40px; }
+        .bird2 { top: 75px; right: 90px; font-size: 20px; }
+
+        /* Navigation Button */
+        .room-switch-btn {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4a3b5c;
+            color: #f3f0ea;
+            border: 2px solid #7c3aed;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            z-index: 10;
+            transition: background 0.2s;
+        }
+
+        .room-switch-btn:hover {
+            background: #6b5382;
+        }
+
         .message-box {
             margin-top: 20px;
             width: 100%;
@@ -238,33 +375,58 @@
 <body>
 
     <div class="room-container">
-        <div class="window" onclick="interact('window')">
-            <div class="stars">
-                <div class="star" style="top: 20px; left: 30px; width: 3px; height: 3px;"></div>
-                <div class="star" style="top: 60px; left: 80px; width: 2px; height: 2px;"></div>
-                <div class="star" style="top: 100px; left: 45px; width: 3px; height: 3px;"></div>
+        <button class="room-switch-btn" onclick="switchRoom()" id="switch-btn">Switch to Cozy Sanctuary 🐾</button>
+
+        <!-- Room 1: The Original Desk Room -->
+        <div class="room active" id="room1">
+            <div class="window" onclick="interact('window')">
+                <div class="stars">
+                    <div class="star" style="top: 20px; left: 30px; width: 3px; height: 3px;"></div>
+                    <div class="star" style="top: 60px; left: 80px; width: 2px; height: 2px;"></div>
+                    <div class="star" style="top: 100px; left: 45px; width: 3px; height: 3px;"></div>
+                </div>
             </div>
+
+            <div class="frame" onclick="interact('frame')" title="Click me">
+                ⭐
+            </div>
+
+            <div class="desk"></div>
+
+            <div class="item plant" onclick="interact('plant')">
+                <div class="plant-leaves">🌱</div>
+            </div>
+
+            <div class="item parrot" onclick="interact('parrot')" title="Parrot">
+                🦜
+            </div>
+
+            <div class="item laptop" onclick="interact('laptop')">
+                <div class="laptop-screen">arwa</div>
+            </div>
+
+            <div class="item mug" onclick="interact('mug')" title="Warm drink"></div>
         </div>
 
-        <div class="frame" onclick="interact('frame')" title="Click me">
-            ⭐
+        <!-- Room 2: The Sanctuary Room with Bed, PC, and Animals -->
+        <div class="room" id="room2">
+            <div class="bed" onclick="interact('bed')" title="Cozy Bed">
+                <div class="pillow"></div>
+                <div class="bedsheet"></div>
+            </div>
+
+            <div class="pc-desk"></div>
+            <div class="pc-monitor" onclick="interact('pc')" title="PC Monitor">
+                <div class="monitor-screen">arwa</div>
+            </div>
+
+            <div class="animal doggo1" onclick="interact('dog1')">🐕</div>
+            <div class="animal doggo2" onclick="interact('dog2')">🐩</div>
+            <div class="animal cat1" onclick="interact('cat1')">🐈</div>
+            <div class="animal cat2" onclick="interact('cat2')">🐱</div>
+            <div class="animal bird1" onclick="interact('bird1')">🐦</div>
+            <div class="animal bird2" onclick="interact('bird2')">🕊️</div>
         </div>
-
-        <div class="desk"></div>
-
-        <div class="item plant" onclick="interact('plant')">
-            <div class="plant-leaves">🌱</div>
-        </div>
-
-        <div class="item parrot" onclick="interact('parrot')" title="Parrot">
-            🦜
-        </div>
-
-        <div class="item laptop" onclick="interact('laptop')">
-            <div class="laptop-screen">arwa</div>
-        </div>
-
-        <div class="item mug" onclick="interact('mug')" title="Warm drink"></div>
     </div>
 
     <div class="message-box">
@@ -273,6 +435,30 @@
     <div class="hint">✨ Tap anything in the room ✨</div>
 
     <script>
+        let currentRoom = 1;
+
+        function switchRoom() {
+            playClickSound();
+            const r1 = document.getElementById('room1');
+            const r2 = document.getElementById('room2');
+            const btn = document.getElementById('switch-btn');
+            const textElement = document.getElementById('main-text');
+
+            if (currentRoom === 1) {
+                r1.classList.remove('active');
+                r2.classList.add('active');
+                btn.innerText = "Switch to Desk Room 💻";
+                currentRoom = 2;
+                textElement.innerText = "Welcome to your cozy animal sanctuary. Tap the pets, the organized bed, or the PC whenever you want to smile.";
+            } else {
+                r2.classList.remove('active');
+                r1.classList.add('active');
+                btn.innerText = "Switch to Cozy Sanctuary 🐾";
+                currentRoom = 1;
+                textElement.innerText = "Back at the main desk. Take a deep breath and tap around.";
+            }
+        }
+
         function playClickSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -302,11 +488,11 @@
             ],
             laptop: [
                 "At least in computer science, if your code fails you just hit Ctrl+Z instead of accidentally ending up in a malpractice lawsuit.",
-                "Arwa, you actually have full control over your sanity here. No gross anatomy labs at 8 AM, just you, your code and your birdies and me of course there to always help hahahaha",
+                "Arwa, you actually have full control over your sanity here. No gross anatomy labs at 8 AM, just pure logic and your own setup.",
                 "Think about how cool it is that you can build literally anything you imagine from a laptop screen. You are setting yourself up for an amazing future."
             ],
             plant: [
-                "Two weeks into faculty life is always chaotic. Everything is new, everyone looks lost, but NOT you, because you are a fighter",
+                "Two weeks into faculty life is always chaotic. Everything is new, everyone looks lost, and you are just trying to figure out where your lectures are. Give yourself permission to not have it all figured out right now.",
                 "You survived Thanaweya Amma. Let that sink in. You went through the ultimate Egyptian academic gauntlet and came out on top, so this new chapter is entirely manageable for you.",
                 "It is okay to feel nervous. Big changes feel scary because you care about doing well, but you are more than capable of handling this transition."
             ],
@@ -321,6 +507,32 @@
             frame: [
                 "Arwa, you earned those high grades through sheer hard work and late nights. That brilliant brain of yours is going to shine wherever you put it.",
                 "Choosing computer science over med school was not backing down from a challenge. It was a smart, conscious choice to protect your mental health and your future. Be proud of that."
+            ],
+            bed: [
+                "A completely made, tidy bed is the ultimate safe haven after a long day of classes. Crawl in mentally whenever things feel too loud.",
+                "Rest is not a reward you have to earn. It is a requirement. Give yourself permission to unwind properly."
+            ],
+            pc: [
+                "Arwa, this setup is your absolute kingdom. You can build incredible applications right here without ever stepping foot inside a hospital.",
+                "Coding on a proper monitor setup hits different. You made the right call choosing software engineering."
+            ],
+            dog1: [
+                "Woof! The doggos are officially declaring you the smartest computer science student in Egypt. No arguments allowed."
+            ],
+            dog2: [
+                "A very happy pup wags its tail every time you remember that you survived Thanaweya Amma."
+            ],
+            cat1: [
+                "Purrr. The cat insists that you stretch your legs, drink some water, and stop stressing over university courses."
+            ],
+            cat2: [
+                "A sleepy kitty curls up nearby to remind you that life is too short to worry about alternate timelines."
+            ],
+            bird1: [
+                "Chirp chirp! Your little bird friends say everything is going to turn out wonderfully."
+            ],
+            bird2: [
+                "A gentle tweet wishing you an amazing semester ahead."
             ]
         };
 
