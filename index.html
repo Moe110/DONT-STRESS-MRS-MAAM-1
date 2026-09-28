@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arwa's 3D Whole House</title>
+    <title>Arwa's Big Full House</title>
     <style>
         * {
             box-sizing: border-box;
@@ -27,8 +27,8 @@
         #canvas-container {
             position: relative;
             width: 100%;
-            max-width: 520px;
-            height: 460px;
+            max-width: 560px;
+            height: 440px;
             border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.6);
             border: 3px solid #3d364a;
@@ -51,17 +51,15 @@
             display: flex;
             gap: 6px;
             z-index: 10;
-            flex-wrap: wrap;
-            justify-content: center;
         }
 
         .control-btn {
             background: rgba(45, 38, 59, 0.85);
             color: #f3f0ea;
             border: 2px solid #7c3aed;
-            padding: 5px 10px;
+            padding: 5px 12px;
             border-radius: 14px;
-            font-size: 10.5px;
+            font-size: 11px;
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             backdrop-filter: blur(4px);
@@ -78,18 +76,18 @@
             bottom: 12px;
             right: 12px;
             display: grid;
-            grid-template-columns: repeat(3, 36px);
-            grid-template-rows: repeat(2, 36px);
+            grid-template-columns: repeat(3, 40px);
+            grid-template-rows: repeat(2, 40px);
             gap: 4px;
             z-index: 10;
         }
 
         .dpad-btn {
-            background: rgba(45, 38, 59, 0.85);
+            background: rgba(45, 38, 59, 0.9);
             color: #f3f0ea;
             border: 2px solid #7c3aed;
-            border-radius: 10px;
-            font-size: 14px;
+            border-radius: 12px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             display: flex;
@@ -111,12 +109,12 @@
         .message-box {
             margin-top: 12px;
             width: 100%;
-            max-width: 520px;
-            min-height: 85px;
+            max-width: 560px;
+            min-height: 80px;
             background: #2d263b;
             border: 2px solid #5d5070;
             border-radius: 14px;
-            padding: 12px 16px;
+            padding: 12px 18px;
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -155,7 +153,7 @@
 
         .hint {
             margin-top: 6px;
-            font-size: 10.5px;
+            font-size: 11px;
             color: #94a3b8;
             letter-spacing: 0.5px;
         }
@@ -168,8 +166,8 @@
 
     <div id="canvas-container">
         <div class="controls-bar">
-            <button class="control-btn" onclick="toggleLights()" id="light-btn">💡 Lights Off</button>
-            <button class="control-btn" onclick="resetPosition()">🏠 Center View</button>
+            <button class="control-btn" onclick="toggleLights()" id="light-btn">💡 lights off</button>
+            <button class="control-btn" onclick="resetPosition()">🏠 center map</button>
         </div>
 
         <div class="dpad-container">
@@ -181,10 +179,10 @@
     </div>
 
     <div class="message-box">
-        <p id="main-text">use WASD or the buttons on screen to walk cuteeee arwa around her whole house explore the rooms and find cuteeee pets hiding in every corner</p>
+        <p id="main-text">walk around this big full house with multiple rooms and find all the hidden pets cuteeee arwa</p>
         <button id="interact-prompt" class="action-prompt" onclick="interactWithNearbyPet()">pet the animal</button>
     </div>
-    <div class="hint">✨ walk close to any pet to interact with it cuteeee ✨</div>
+    <div class="hint">✨ explore all rooms using WASD or on screen arrows cuteeee ✨</div>
 
     <script>
         let scene, camera, renderer;
@@ -195,20 +193,31 @@
         let characterGroup;
         let charPosition = { x: 0, z: 0 };
         let charRotation = 0;
-        const charSpeed = 0.055;
+        const charSpeed = 0.06;
         const keys = { w: false, a: false, s: false, d: false };
 
-        // Pets list around the house
+        // Big house map boundaries & interior room walls for collision
+        const worldBounds = { minX: -8.7, maxX: 8.7, minZ: -8.7, maxZ: 8.7 };
+        
+        // Walls list for collision detection [minX, maxX, minZ, maxZ]
+        const interiorWalls = [
+            // Center vertical dividing wall with a doorway gap
+            { minX: -0.3, maxX: 0.3, minZ: -5, maxZ: -1.5 },
+            { minX: -0.3, maxX: 0.3, minZ: 1.5, maxZ: 5 },
+            // Horizontal dividing wall between front and back rooms with a doorway gap
+            { minX: -5, maxX: -1.5, minZ: -0.3, maxZ: 0.3 },
+            { minX: 1.5, maxX: 5, minZ: -0.3, maxZ: 0.3 }
+        ];
+
+        // Pets scattered across multiple rooms
         const pets = [
-            { x: -3.5, z: -3.5, type: 'dog', name: 'goldie', emoji: '🐶', active: false, msg: "goldie wags its tail happily and gives you a cuteeee warm hug" },
-            { x: 3.5, z: -3.5, type: 'cat', name: 'luna', emoji: '🐱', active: false, msg: "luna purrs softly and rubs against your shoes cuteeee kitty cuddles" },
-            { x: -3.5, z: 3.5, type: 'bird', name: 'chirpy', emoji: '🐦', active: false, msg: "chirpy sings a cheerful little melody just for you cuteeee feathery friend" },
-            { x: 3.5, z: 3.5, type: 'bunny', name: 'hop', emoji: '🐰', active: false, msg: "hop does a tiny little joyful jump right in front of you cuteeee bunny energy" }
+            { x: -6.5, z: -6.5, type: 'dog', name: 'goldie', emoji: '🐶', room: 'bedroom', msg: "goldie wags its fluffy tail so happily cuteeee" },
+            { x: 6.5, z: -6.5, type: 'cat', name: 'luna', emoji: '🐱', room: 'office', msg: "luna purrs and rubs right against your ankle cuteeee" },
+            { x: -6.5, z: 6.5, type: 'bird', name: 'chirpy', emoji: '🐦', room: 'kitchen', msg: "chirpy sings a cheerful morning melody cuteeee" },
+            { x: 6.5, z: 6.5, type: 'bunny', name: 'hop', emoji: '🐰', room: 'lounge', msg: "hop does a cute little bounce on the plush carpet cuteeee" },
+            { x: 0, z: -7.2, type: 'hamster', name: 'nugget', emoji: '🐹', room: 'hallway', msg: "nugget stuffs its cheeks with tiny snacks cuteeee" }
         ];
         let activeNearbyPet = null;
-
-        // House boundaries for wall collisions
-        const minX = -4.7, maxX = 4.7, minZ = -4.7, maxZ = 4.7;
 
         init();
         animate();
@@ -220,7 +229,7 @@
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0xfcfbf9);
 
-            // 2. Camera setup (Third person view following character)
+            // 2. Camera setup
             camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
 
             // 3. Renderer setup
@@ -231,18 +240,18 @@
             container.appendChild(renderer.domElement);
 
             // 4. Lighting
-            ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+            ambientLight = new THREE.AmbientLight(0xffffff, 0.68);
             scene.add(ambientLight);
 
-            directionalLight = new THREE.DirectionalLight(0xfffaed, 0.9);
-            directionalLight.position.set(6, 10, 6);
+            directionalLight = new THREE.DirectionalLight(0xfffaed, 0.95);
+            directionalLight.position.set(10, 15, 10);
             directionalLight.castShadow = true;
             directionalLight.shadow.mapSize.width = 1024;
             directionalLight.shadow.mapSize.height = 1024;
             scene.add(directionalLight);
 
-            // 5. Build Whole House & Decor
-            buildHouse();
+            // 5. Build Big Multi-Room House
+            buildBigHouse();
 
             // 6. Build Character
             buildCharacter();
@@ -250,120 +259,103 @@
             // 7. Build Pets
             buildPets();
 
-            // 8. Event listeners for keyboard
+            // 8. Event listeners
             window.addEventListener('keydown', (e) => handleKey(e, true));
             window.addEventListener('keyup', (e) => handleKey(e, false));
             window.addEventListener('resize', onWindowResize, false);
         }
 
-        function buildHouse() {
-            // House Floor with wood planks look
-            const floorGeo = new THREE.PlaneGeometry(10, 10);
+        function buildBigHouse() {
+            // Big wooden floor covering all rooms
+            const floorGeo = new THREE.PlaneGeometry(18, 18);
             const floorMat = new THREE.MeshStandardMaterial({ color: 0x8a5a36, roughness: 0.75 });
             const floor = new THREE.Mesh(floorGeo, floorMat);
             floor.rotation.x = -Math.PI / 2;
             floor.receiveShadow = true;
             scene.add(floor);
 
-            // House Outer Walls
+            // Outer House Walls
             const wallMat = new THREE.MeshStandardMaterial({ color: 0xf3f0ea, roughness: 0.9 });
             
-            // Back Wall
-            const backWall = new THREE.Mesh(new THREE.BoxGeometry(10, 5, 0.3), wallMat);
-            backWall.position.set(0, 2.5, -5);
+            const backWall = new THREE.Mesh(new THREE.BoxGeometry(18, 5, 0.4), wallMat);
+            backWall.position.set(0, 2.5, -9);
             backWall.receiveShadow = true;
             scene.add(backWall);
 
-            // Left Wall
-            const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.3, 5, 10), wallMat);
-            leftWall.position.set(-5, 2.5, 0);
+            const frontWall = new THREE.Mesh(new THREE.BoxGeometry(18, 5, 0.4), wallMat);
+            frontWall.position.set(0, 2.5, 9);
+            frontWall.receiveShadow = true;
+            scene.add(frontWall);
+
+            const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, 5, 18), wallMat);
+            leftWall.position.set(-9, 2.5, 0);
             leftWall.receiveShadow = true;
             scene.add(leftWall);
 
-            // Right Wall
-            const rightWall = new THREE.Mesh(new THREE.BoxGeometry(0.3, 5, 10), wallMat);
-            rightWall.position.set(5, 2.5, 0);
+            const rightWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, 5, 18), wallMat);
+            rightWall.position.set(9, 2.5, 0);
             rightWall.receiveShadow = true;
             scene.add(rightWall);
 
-            // Front Wall (partial)
-            const frontWall1 = new THREE.Mesh(new THREE.BoxGeometry(3.5, 5, 0.3), wallMat);
-            frontWall1.position.set(-3.25, 2.5, 5);
-            scene.add(frontWall1);
-            const frontWall2 = new THREE.Mesh(new THREE.BoxGeometry(3.5, 5, 0.3), wallMat);
-            frontWall2.position.set(3.25, 2.5, 5);
-            scene.add(frontWall2);
+            // Interior walls dividing multiple rooms
+            const partitionMat = new THREE.MeshStandardMaterial({ color: 0xe6e0d5, roughness: 0.8 });
+            
+            // Vertical partitions with gaps for doorways
+            const vWall1 = new THREE.Mesh(new THREE.BoxGeometry(0.3, 5, 4.5), partitionMat);
+            vWall1.position.set(0, 2.5, -6.5);
+            scene.add(vWall1);
 
-            // Interior dividing wall (making multiple rooms)
-            const dividerMat = new THREE.MeshStandardMaterial({ color: 0xe6e0d5, roughness: 0.8 });
-            const divWall = new THREE.Mesh(new THREE.BoxGeometry(0.2, 5, 5), dividerMat);
-            divWall.position.set(0, 2.5, -2.5);
-            scene.add(divWall);
+            const vWall2 = new THREE.Mesh(new THREE.BoxGeometry(0.3, 5, 4.5), partitionMat);
+            vWall2.position.set(0, 2.5, 6.5);
+            scene.add(vWall2);
 
-            // --- DECOR & CARPETS ---
-            // Living Room Cozy Rug
-            const rugGeo = new THREE.PlaneGeometry(3, 2.5);
+            // Horizontal partitions
+            const hWall1 = new THREE.Mesh(new THREE.BoxGeometry(4.5, 5, 0.3), partitionMat);
+            hWall1.position.set(-6.5, 2.5, 0);
+            scene.add(hWall1);
+
+            const hWall2 = new THREE.Mesh(new THREE.BoxGeometry(4.5, 5, 0.3), partitionMat);
+            hWall2.position.set(6.5, 2.5, 0);
+            scene.add(hWall2);
+
+            // --- DECOR & CARPETS IN ROOMS ---
+            // Bedroom Carpets & Bed
+            const bed = new THREE.Group();
+            const mattress = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.4, 3), new THREE.MeshStandardMaterial({ color: 0xf472b6 }));
+            mattress.position.set(0, 0.2, 0);
+            bed.add(mattress);
+            bed.position.set(-6.5, 0, -6.5);
+            scene.add(bed);
+
+            // Living Room Rug
+            const rugGeo = new THREE.PlaneGeometry(4, 3.5);
             const rugMat = new THREE.MeshStandardMaterial({ color: 0x7c3aed, roughness: 0.9 });
             const rug = new THREE.Mesh(rugGeo, rugMat);
             rug.rotation.x = -Math.PI / 2;
-            rug.position.set(0, 0.01, 2);
+            rug.position.set(5, 0.01, 5);
             scene.add(rug);
 
-            // Bedroom Bed
-            const bedGroup = new THREE.Group();
-            const mattress = new THREE.Mesh(
-                new THREE.BoxGeometry(2, 0.4, 2.8),
-                new THREE.MeshStandardMaterial({ color: 0xf472b6, roughness: 0.8 })
-            );
-            mattress.position.set(0, 0.2, 0);
-            mattress.castShadow = true;
-            bedGroup.add(mattress);
-            
-            const blanket = new THREE.Mesh(
-                new THREE.BoxGeometry(1.8, 0.42, 1.8),
-                new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9 })
-            );
-            blanket.position.set(0, 0.22, 0.4);
-            bedGroup.add(blanket);
-            
-            bedGroup.position.set(-3.2, 0, -3.2);
-            scene.add(bedGroup);
-
-            // Study Desk & PC Setup in office room
-            const desk = new THREE.Mesh(
-                new THREE.BoxGeometry(2.2, 0.1, 1.2),
-                new THREE.MeshStandardMaterial({ color: 0x4a3b5c })
-            );
-            desk.position.set(2.8, 1.0, -3.2);
-            desk.castShadow = true;
+            // Office Desk
+            const desk = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.1, 1.2), new THREE.MeshStandardMaterial({ color: 0x4a3b5c }));
+            desk.position.set(6.5, 1.0, -6.5);
             scene.add(desk);
-
-            const pcScreen = new THREE.Mesh(
-                new THREE.BoxGeometry(1.0, 0.6, 0.08),
-                new THREE.MeshStandardMaterial({ color: 0x1e293b, emissive: 0x0f172a })
-            );
-            pcScreen.position.set(2.8, 1.5, -3.3);
-            scene.add(pcScreen);
         }
 
         function buildCharacter() {
             characterGroup = new THREE.Group();
 
-            // Cute Arwa Avatar (Stylized low-poly avatar with hijab / cute outfit)
-            const bodyMat = new THREE.MeshStandardMaterial({ color: 0x7c3aed, roughness: 0.6 }); // Purple hoodie
+            const bodyMat = new THREE.MeshStandardMaterial({ color: 0x7c3aed, roughness: 0.6 });
             const body = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.7, 0.3), bodyMat);
             body.position.set(0, 0.55, 0);
             body.castShadow = true;
             characterGroup.add(body);
 
-            // Cute Head & Hijab
-            const headMat = new THREE.MeshStandardMaterial({ color: 0xfbcfe8, roughness: 0.7 }); // Skin / Hijab tone
+            const headMat = new THREE.MeshStandardMaterial({ color: 0xfbcfe8, roughness: 0.7 });
             const head = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 16), headMat);
             head.position.set(0, 1.05, 0);
             head.castShadow = true;
             characterGroup.add(head);
 
-            // Cute little halo / flower crown accent on head
             const crownMat = new THREE.MeshStandardMaterial({ color: 0xfde047 });
             const crown = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.03, 8, 24), crownMat);
             crown.rotation.x = Math.PI / 2;
@@ -377,11 +369,8 @@
         function buildPets() {
             pets.forEach(p => {
                 const petGroup = new THREE.Group();
-                
-                const meshMat = new THREE.MeshStandardMaterial({ 
-                    color: p.type === 'dog' ? 0xd97706 : p.type === 'cat' ? 0x94a3b8 : p.type === 'bird' ? 0x38bdf8 : 0xf472b6, 
-                    roughness: 0.7 
-                });
+                const col = p.type === 'dog' ? 0xd97706 : p.type === 'cat' ? 0x94a3b8 : p.type === 'bird' ? 0x38bdf8 : p.type === 'bunny' ? 0xf472b6 : 0xfbbf24;
+                const meshMat = new THREE.MeshStandardMaterial({ color: col, roughness: 0.7 });
                 
                 const body = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16, 16), meshMat);
                 body.position.set(0, 0.25, 0);
@@ -418,16 +407,16 @@
 
             if (lightsOn) {
                 scene.background.setHex(0xfcfbf9);
-                ambientLight.intensity = 0.65;
-                directionalLight.intensity = 0.9;
-                btn.innerText = "💡 Lights Off";
-                textElement.innerText = "lights are back on cozy brightness restored cuteeee";
+                ambientLight.intensity = 0.68;
+                directionalLight.intensity = 0.95;
+                btn.innerText = "💡 lights off";
+                textElement.innerText = "lights are back on cozy house brightness restored cuteeee";
             } else {
                 scene.background.setHex(0x0e0c14);
                 ambientLight.intensity = 0.15;
                 directionalLight.intensity = 0.2;
-                btn.innerText = "💡 Lights On";
-                textElement.innerText = "lights are off night ambiance is so peaceful cuteeee";
+                btn.innerText = "💡 lights on";
+                textElement.innerText = "lights are off nighttime house vibe is so peaceful cuteeee";
             }
         }
 
@@ -435,7 +424,7 @@
             playSound(500, 600);
             charPosition.x = 0;
             charPosition.z = 0;
-            document.getElementById('main-text').innerText = "returned to the center of the house cuteeee";
+            document.getElementById('main-text').innerText = "returned to the center hallway cuteeee";
         }
 
         function playSound(f1, f2) {
@@ -458,7 +447,21 @@
             if (!activeNearbyPet) return;
             playSound(600, 900);
             const textElement = document.getElementById('main-text');
-            textElement.innerText = `${activeNearbyPet.emoji} ${activeNearbyPet.msg} cuteeee`;
+            textElement.innerText = `${activeNearbyPet.emoji} ${activeNearbyPet.msg}`;
+        }
+
+        function checkCollision(x, z) {
+            // Check outer boundaries
+            if (x < worldBounds.minX || x > worldBounds.maxX || z < worldBounds.minZ || z > worldBounds.maxZ) {
+                return true;
+            }
+            // Check interior walls
+            for (let w of interiorWalls) {
+                if (x >= w.minX && x <= w.maxX && z >= w.minZ && z <= w.maxZ) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         function updateGame() {
@@ -474,27 +477,30 @@
                 let newX = charPosition.x + dx;
                 let newZ = charPosition.z + dz;
 
-                // Simple wall collision bounding box check
-                if (newX > minX && newX < maxX) charPosition.x = newX;
-                if (newZ > minZ && newZ < maxZ) charPosition.z = newZ;
+                // Slide collisions separately for smooth movement along walls
+                if (!checkCollision(newX, charPosition.z)) {
+                    charPosition.x = newX;
+                }
+                if (!checkCollision(charPosition.x, newZ)) {
+                    charPosition.z = newZ;
+                }
 
-                // Update character rotation towards movement direction
                 charRotation = Math.atan2(dx, dz);
                 characterGroup.rotation.y = charRotation;
             }
 
             characterGroup.position.set(charPosition.x, 0, charPosition.z);
 
-            // Smooth third person camera following character from behind and above
-            const targetCamX = charPosition.x - Math.sin(charRotation) * 4;
-            const targetCamZ = charPosition.z - Math.cos(charRotation) * 4;
+            // Smooth camera follow
+            const targetCamX = charPosition.x - Math.sin(charRotation) * 4.5;
+            const targetCamZ = charPosition.z - Math.cos(charRotation) * 4.5;
             
             camera.position.x += (targetCamX - camera.position.x) * 0.1;
-            camera.position.y += (3.5 - camera.position.y) * 0.1;
+            camera.position.y += (3.8 - camera.position.y) * 0.1;
             camera.position.z += (targetCamZ - camera.position.z) * 0.1;
             camera.lookAt(charPosition.x, charPosition.y + 0.8, charPosition.z);
 
-            // Check distance to pets for interaction prompt
+            // Check distance to pets
             let nearest = null;
             let minDist = 1.4;
 
