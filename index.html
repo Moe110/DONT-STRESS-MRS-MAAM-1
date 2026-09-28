@@ -179,43 +179,37 @@
     </div>
 
     <div class="message-box">
-        <p id="main-text">walk around this big full house with multiple rooms and find all the hidden pets cuteeee arwa</p>
+        <p id="main-text">walk around this big full house with multiple rooms and explore every corner</p>
         <button id="interact-prompt" class="action-prompt" onclick="interactWithNearbyPet()">pet the animal</button>
     </div>
-    <div class="hint">✨ explore all rooms using WASD or on screen arrows cuteeee ✨</div>
+    <div class="hint">✨ explore all rooms using WASD or on screen arrows ✨</div>
 
     <script>
         let scene, camera, renderer;
         let ambientLight, directionalLight;
         let lightsOn = true;
 
-        // Character variables
         let characterGroup;
         let charPosition = { x: 0, z: 0 };
         let charRotation = 0;
         const charSpeed = 0.06;
         const keys = { w: false, a: false, s: false, d: false };
 
-        // Big house map boundaries & interior room walls for collision
         const worldBounds = { minX: -8.7, maxX: 8.7, minZ: -8.7, maxZ: 8.7 };
         
-        // Walls list for collision detection [minX, maxX, minZ, maxZ]
         const interiorWalls = [
-            // Center vertical dividing wall with a doorway gap
             { minX: -0.3, maxX: 0.3, minZ: -5, maxZ: -1.5 },
             { minX: -0.3, maxX: 0.3, minZ: 1.5, maxZ: 5 },
-            // Horizontal dividing wall between front and back rooms with a doorway gap
             { minX: -5, maxX: -1.5, minZ: -0.3, maxZ: 0.3 },
             { minX: 1.5, maxX: 5, minZ: -0.3, maxZ: 0.3 }
         ];
 
-        // Pets scattered across multiple rooms
         const pets = [
-            { x: -6.5, z: -6.5, type: 'dog', name: 'goldie', emoji: '🐶', room: 'bedroom', msg: "goldie wags its fluffy tail so happily cuteeee" },
-            { x: 6.5, z: -6.5, type: 'cat', name: 'luna', emoji: '🐱', room: 'office', msg: "luna purrs and rubs right against your ankle cuteeee" },
-            { x: -6.5, z: 6.5, type: 'bird', name: 'chirpy', emoji: '🐦', room: 'kitchen', msg: "chirpy sings a cheerful morning melody cuteeee" },
-            { x: 6.5, z: 6.5, type: 'bunny', name: 'hop', emoji: '🐰', room: 'lounge', msg: "hop does a cute little bounce on the plush carpet cuteeee" },
-            { x: 0, z: -7.2, type: 'hamster', name: 'nugget', emoji: '🐹', room: 'hallway', msg: "nugget stuffs its cheeks with tiny snacks cuteeee" }
+            { x: -6.5, z: -6.5, type: 'dog', name: 'goldie', emoji: '🐶', room: 'bedroom', msg: "goldie wags its fluffy tail so happily" },
+            { x: 6.5, z: -6.5, type: 'cat', name: 'luna', emoji: '🐱', room: 'office', msg: "luna purrs and rubs right against your ankle" },
+            { x: -6.5, z: 6.5, type: 'bird', name: 'chirpy', emoji: '🐦', room: 'kitchen', msg: "chirpy sings a cheerful morning melody" },
+            { x: 6.5, z: 6.5, type: 'bunny', name: 'hop', emoji: '🐰', room: 'lounge', msg: "hop does a small joyful bounce on the plush carpet" },
+            { x: 0, z: -7.2, type: 'hamster', name: 'nugget', emoji: '🐹', room: 'hallway', msg: "nugget stuffs its tiny cheeks with snacks" }
         ];
         let activeNearbyPet = null;
 
@@ -225,22 +219,18 @@
         function init() {
             const container = document.getElementById('canvas-container');
 
-            // 1. Scene setup
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xfcfbf9);
+            scene.background = new THREE.Color(0x1a1625);
 
-            // 2. Camera setup
             camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
 
-            // 3. Renderer setup
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             container.appendChild(renderer.domElement);
 
-            // 4. Lighting
-            ambientLight = new THREE.AmbientLight(0xffffff, 0.68);
+            ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
             scene.add(ambientLight);
 
             directionalLight = new THREE.DirectionalLight(0xfffaed, 0.95);
@@ -250,23 +240,16 @@
             directionalLight.shadow.mapSize.height = 1024;
             scene.add(directionalLight);
 
-            // 5. Build Big Multi-Room House
             buildBigHouse();
-
-            // 6. Build Character
             buildCharacter();
-
-            // 7. Build Pets
             buildPets();
 
-            // 8. Event listeners
             window.addEventListener('keydown', (e) => handleKey(e, true));
             window.addEventListener('keyup', (e) => handleKey(e, false));
             window.addEventListener('resize', onWindowResize, false);
         }
 
         function buildBigHouse() {
-            // Big wooden floor covering all rooms
             const floorGeo = new THREE.PlaneGeometry(18, 18);
             const floorMat = new THREE.MeshStandardMaterial({ color: 0x8a5a36, roughness: 0.75 });
             const floor = new THREE.Mesh(floorGeo, floorMat);
@@ -274,8 +257,7 @@
             floor.receiveShadow = true;
             scene.add(floor);
 
-            // Outer House Walls
-            const wallMat = new THREE.MeshStandardMaterial({ color: 0xf3f0ea, roughness: 0.9 });
+            const wallMat = new THREE.MeshStandardMaterial({ color: 0x3d364a, roughness: 0.9 });
             
             const backWall = new THREE.Mesh(new THREE.BoxGeometry(18, 5, 0.4), wallMat);
             backWall.position.set(0, 2.5, -9);
@@ -297,10 +279,8 @@
             rightWall.receiveShadow = true;
             scene.add(rightWall);
 
-            // Interior walls dividing multiple rooms
-            const partitionMat = new THREE.MeshStandardMaterial({ color: 0xe6e0d5, roughness: 0.8 });
+            const partitionMat = new THREE.MeshStandardMaterial({ color: 0x2d263b, roughness: 0.8 });
             
-            // Vertical partitions with gaps for doorways
             const vWall1 = new THREE.Mesh(new THREE.BoxGeometry(0.3, 5, 4.5), partitionMat);
             vWall1.position.set(0, 2.5, -6.5);
             scene.add(vWall1);
@@ -309,7 +289,6 @@
             vWall2.position.set(0, 2.5, 6.5);
             scene.add(vWall2);
 
-            // Horizontal partitions
             const hWall1 = new THREE.Mesh(new THREE.BoxGeometry(4.5, 5, 0.3), partitionMat);
             hWall1.position.set(-6.5, 2.5, 0);
             scene.add(hWall1);
@@ -318,8 +297,6 @@
             hWall2.position.set(6.5, 2.5, 0);
             scene.add(hWall2);
 
-            // --- DECOR & CARPETS IN ROOMS ---
-            // Bedroom Carpets & Bed
             const bed = new THREE.Group();
             const mattress = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.4, 3), new THREE.MeshStandardMaterial({ color: 0xf472b6 }));
             mattress.position.set(0, 0.2, 0);
@@ -327,7 +304,6 @@
             bed.position.set(-6.5, 0, -6.5);
             scene.add(bed);
 
-            // Living Room Rug
             const rugGeo = new THREE.PlaneGeometry(4, 3.5);
             const rugMat = new THREE.MeshStandardMaterial({ color: 0x7c3aed, roughness: 0.9 });
             const rug = new THREE.Mesh(rugGeo, rugMat);
@@ -335,7 +311,6 @@
             rug.position.set(5, 0.01, 5);
             scene.add(rug);
 
-            // Office Desk
             const desk = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.1, 1.2), new THREE.MeshStandardMaterial({ color: 0x4a3b5c }));
             desk.position.set(6.5, 1.0, -6.5);
             scene.add(desk);
@@ -406,17 +381,17 @@
             const textElement = document.getElementById('main-text');
 
             if (lightsOn) {
-                scene.background.setHex(0xfcfbf9);
-                ambientLight.intensity = 0.68;
+                scene.background.setHex(0x1a1625);
+                ambientLight.intensity = 0.7;
                 directionalLight.intensity = 0.95;
                 btn.innerText = "💡 lights off";
-                textElement.innerText = "lights are back on cozy house brightness restored cuteeee";
+                textElement.innerText = "lights are back on";
             } else {
-                scene.background.setHex(0x0e0c14);
-                ambientLight.intensity = 0.15;
-                directionalLight.intensity = 0.2;
+                scene.background.setHex(0x08060d);
+                ambientLight.intensity = 0.2;
+                directionalLight.intensity = 0.3;
                 btn.innerText = "💡 lights on";
-                textElement.innerText = "lights are off nighttime house vibe is so peaceful cuteeee";
+                textElement.innerText = "lights are off for a cozy night mode";
             }
         }
 
@@ -424,7 +399,7 @@
             playSound(500, 600);
             charPosition.x = 0;
             charPosition.z = 0;
-            document.getElementById('main-text').innerText = "returned to the center hallway cuteeee";
+            document.getElementById('main-text').innerText = "returned to the center hallway";
         }
 
         function playSound(f1, f2) {
@@ -451,11 +426,9 @@
         }
 
         function checkCollision(x, z) {
-            // Check outer boundaries
             if (x < worldBounds.minX || x > worldBounds.maxX || z < worldBounds.minZ || z > worldBounds.maxZ) {
                 return true;
             }
-            // Check interior walls
             for (let w of interiorWalls) {
                 if (x >= w.minX && x <= w.maxX && z >= w.minZ && z <= w.maxZ) {
                     return true;
@@ -477,7 +450,6 @@
                 let newX = charPosition.x + dx;
                 let newZ = charPosition.z + dz;
 
-                // Slide collisions separately for smooth movement along walls
                 if (!checkCollision(newX, charPosition.z)) {
                     charPosition.x = newX;
                 }
@@ -491,7 +463,6 @@
 
             characterGroup.position.set(charPosition.x, 0, charPosition.z);
 
-            // Smooth camera follow
             const targetCamX = charPosition.x - Math.sin(charRotation) * 4.5;
             const targetCamZ = charPosition.z - Math.cos(charRotation) * 4.5;
             
@@ -500,7 +471,6 @@
             camera.position.z += (targetCamZ - camera.position.z) * 0.1;
             camera.lookAt(charPosition.x, charPosition.y + 0.8, charPosition.z);
 
-            // Check distance to pets
             let nearest = null;
             let minDist = 1.4;
 
@@ -515,7 +485,7 @@
             if (nearest) {
                 activeNearbyPet = nearest;
                 promptBtn.style.display = 'inline-block';
-                promptBtn.innerText = `pet ${nearest.name} ${nearest.emoji} cuteeee`;
+                promptBtn.innerText = `pet ${nearest.name} ${nearest.emoji}`;
             } else {
                 activeNearbyPet = null;
                 promptBtn.style.display = 'none';
