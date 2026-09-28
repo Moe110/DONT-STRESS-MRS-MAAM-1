@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Cozy Little Corner for Arwa</title>
+    <title>Arwa's 3D Cozy Room</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,540 +13,531 @@
         }
 
         body {
-            background-color: #1e1b24;
+            background-color: #0b0a10;
             color: #f3f0ea;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 15px;
-            overflow-x: hidden;
+            padding: 10px;
+            overflow: hidden;
         }
 
-        .room-container {
+        #canvas-container {
             position: relative;
             width: 100%;
-            max-width: 400px;
-            height: 420px;
-            background: linear-gradient(135deg, #2c2837 0%, #1f1b24 100%);
+            max-width: 480px;
+            height: 480px;
             border-radius: 20px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
-            border: 2px solid #3d364a;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            border: 3px solid #3d364a;
             overflow: hidden;
+            background-color: #1a1625;
         }
 
-        .room {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: none;
-        }
-
-        .room.active {
+        canvas {
             display: block;
-        }
-
-        .window {
-            position: absolute;
-            top: 25px;
-            left: 20px;
-            width: 100px;
-            height: 150px;
-            background: #121017;
-            border: 5px solid #4a415a;
-            border-radius: 8px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .window:active {
-            transform: scale(0.97);
-        }
-
-        .stars {
-            position: relative;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle, #2d263b 0%, #121017 100%);
+            touch-action: none;
         }
 
-        .star {
-            position: absolute;
-            background: #fff;
-            border-radius: 50%;
-            animation: twinkle 2s infinite alternate;
-        }
-
-        @keyframes twinkle {
-            0% { opacity: 0.3; }
-            100% { opacity: 1; }
-        }
-
-        .frame {
-            position: absolute;
-            top: 30px;
-            right: 20px;
-            width: 55px;
-            height: 75px;
-            background: #e2e8f0;
-            border: 4px solid #78350f;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            cursor: pointer;
-            transition: transform 0.2s;
-            z-index: 2;
-        }
-
-        .frame:active {
-            transform: scale(0.95);
-        }
-
-        .desk {
-            position: absolute;
-            bottom: 45px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 360px;
-            height: 25px;
-            background: #5c4a3b;
-            border-radius: 6px;
-            box-shadow: 0 8px 0 #3b2f25;
-        }
-
-        .item {
-            position: absolute;
-            cursor: pointer;
-            transition: transform 0.2s, filter 0.2s;
-            -webkit-tap-highlight-color: transparent;
-            bottom: 25px;
-        }
-
-        .item:active {
-            transform: scale(0.92);
-        }
-
-        .plant {
-            left: 15px;
-            width: 30px;
-            height: 40px;
-            background: #475569;
-            border-radius: 0 0 8px 8px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-        }
-
-        .plant-leaves {
-            position: absolute;
-            bottom: 28px;
-            font-size: 22px;
-        }
-
-        .parrot {
-            left: 55px;
-            width: 30px;
-            height: 40px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            font-size: 24px;
-        }
-
-        .laptop {
-            left: 95px;
-            width: 90px;
-            height: 55px;
-            background: #a3a3a3;
-            border-radius: 5px 5px 0 0;
-            border: 3px solid #737373;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .laptop::after {
-            content: '';
-            position: absolute;
-            bottom: -7px;
-            width: 104px;
-            height: 7px;
-            background: #8c8c8c;
-            border-radius: 0 0 5px 5px;
-            left: -8px;
-        }
-
-        .laptop-screen {
-            width: 74px;
-            height: 38px;
-            background: #0f172a;
-            border-radius: 2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            color: #38bdf8;
-            font-family: monospace;
-            font-weight: bold;
-            letter-spacing: 0.5px;
-        }
-
-        .mug {
-            right: 15px;
-            width: 28px;
-            height: 32px;
-            background: #d97706;
-            border-radius: 0 0 6px 6px;
-        }
-
-        .mug::before {
-            content: '';
-            position: absolute;
-            right: -7px;
-            top: 6px;
-            width: 9px;
-            height: 13px;
-            border: 3px solid #d97706;
-            border-left: none;
-            border-radius: 0 6px 6px 0;
-        }
-
-        /* Room Two Styles */
-        .bed {
-            position: absolute;
-            top: 35px;
-            left: 20px;
-            width: 130px;
-            height: 110px;
-            background: #4a3b5c;
-            border-radius: 10px;
-            border: 3px solid #6b5382;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            padding-top: 10px;
-            transition: transform 0.2s;
-        }
-
-        .bed:active {
-            transform: scale(0.97);
-        }
-
-        .pillow {
-            width: 50px;
-            height: 25px;
-            background: #d8b4fe;
-            border-radius: 6px;
-        }
-
-        .bedsheet {
-            margin-top: 10px;
-            width: 110px;
-            height: 60px;
-            background: #7c3aed;
-            border-radius: 6px;
-        }
-
-        .pc-desk {
-            position: absolute;
-            bottom: 45px;
-            right: 20px;
-            width: 160px;
-            height: 22px;
-            background: #5c4a3b;
-            border-radius: 5px;
-            box-shadow: 0 6px 0 #3b2f25;
-        }
-
-        .pc-monitor {
-            position: absolute;
-            bottom: 67px;
-            right: 50px;
-            width: 70px;
-            height: 48px;
-            background: #a3a3a3;
-            border: 3px solid #737373;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .pc-monitor:active {
-            transform: scale(0.95);
-        }
-
-        .monitor-screen {
-            width: 58px;
-            height: 36px;
-            background: #0f172a;
-            border-radius: 2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            color: #38bdf8;
-            font-family: monospace;
-            font-weight: bold;
-        }
-
-        .animal {
-            position: absolute;
-            cursor: pointer;
-            transition: transform 0.2s;
-            -webkit-tap-highlight-color: transparent;
-            font-size: 24px;
-        }
-
-        .animal:active {
-            transform: scale(0.9);
-        }
-
-        .doggo1 { bottom: 50px; left: 165px; }
-        .doggo2 { bottom: 50px; left: 200px; }
-        .cat1 { bottom: 115px; right: 100px; }
-        .cat2 { bottom: 50px; right: 125px; }
-        .bird1 { top: 35px; right: 40px; }
-        .bird2 { top: 75px; right: 90px; font-size: 20px; }
-
-        /* Navigation Button */
-        .room-switch-btn {
+        .controls-bar {
             position: absolute;
             top: 15px;
             left: 50%;
             transform: translateX(-50%);
-            background: #4a3b5c;
-            color: #f3f0ea;
-            border: 2px solid #7c3aed;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            display: flex;
+            gap: 8px;
             z-index: 10;
-            transition: background 0.2s;
         }
 
-        .room-switch-btn:hover {
-            background: #6b5382;
+        .control-btn {
+            background: rgba(45, 38, 59, 0.85);
+            color: #f3f0ea;
+            border: 2px solid #7c3aed;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
+            transition: background 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .control-btn:hover {
+            background: rgba(107, 83, 130, 0.9);
         }
 
         .message-box {
-            margin-top: 20px;
+            margin-top: 15px;
             width: 100%;
-            max-width: 400px;
-            min-height: 90px;
+            max-width: 480px;
+            min-height: 95px;
             background: #2d263b;
             border: 2px solid #5d5070;
             border-radius: 14px;
-            padding: 16px 20px;
+            padding: 14px 18px;
             text-align: center;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
 
         .message-box p {
-            font-size: 15px;
+            font-size: 13.5px;
             line-height: 1.5;
             color: #e2e8f0;
             transition: opacity 0.15s ease;
         }
 
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 8px;
+        }
+
+        .nav-btn {
+            background: #4a3b5c;
+            color: #f3f0ea;
+            border: 1px solid #7c3aed;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            cursor: pointer;
+            display: none;
+        }
+
         .hint {
-            margin-top: 12px;
-            font-size: 12px;
+            margin-top: 8px;
+            font-size: 11px;
             color: #94a3b8;
             letter-spacing: 0.5px;
         }
     </style>
+
+    <!-- Load Three.js from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
-    <div class="room-container">
-        <button class="room-switch-btn" onclick="switchRoom()" id="switch-btn">Switch to Cozy Sanctuary 🐾</button>
-
-        <!-- Room 1: The Original Desk Room -->
-        <div class="room active" id="room1">
-            <div class="window" onclick="interact('window')">
-                <div class="stars">
-                    <div class="star" style="top: 20px; left: 30px; width: 3px; height: 3px;"></div>
-                    <div class="star" style="top: 60px; left: 80px; width: 2px; height: 2px;"></div>
-                    <div class="star" style="top: 100px; left: 45px; width: 3px; height: 3px;"></div>
-                </div>
-            </div>
-
-            <div class="frame" onclick="interact('frame')" title="Click me">
-                ⭐
-            </div>
-
-            <div class="desk"></div>
-
-            <div class="item plant" onclick="interact('plant')">
-                <div class="plant-leaves">🌱</div>
-            </div>
-
-            <div class="item parrot" onclick="interact('parrot')" title="Parrot">
-                🦜
-            </div>
-
-            <div class="item laptop" onclick="interact('laptop')">
-                <div class="laptop-screen">arwa</div>
-            </div>
-
-            <div class="item mug" onclick="interact('mug')" title="Warm drink"></div>
-        </div>
-
-        <!-- Room 2: The Sanctuary Room with Bed, PC, and Animals -->
-        <div class="room" id="room2">
-            <div class="bed" onclick="interact('bed')" title="Cozy Bed">
-                <div class="pillow"></div>
-                <div class="bedsheet"></div>
-            </div>
-
-            <div class="pc-desk"></div>
-            <div class="pc-monitor" onclick="interact('pc')" title="PC Monitor">
-                <div class="monitor-screen">arwa</div>
-            </div>
-
-            <div class="animal doggo1" onclick="interact('dog1')">🐕</div>
-            <div class="animal doggo2" onclick="interact('dog2')">🐩</div>
-            <div class="animal cat1" onclick="interact('cat1')">🐈</div>
-            <div class="animal cat2" onclick="interact('cat2')">🐱</div>
-            <div class="animal bird1" onclick="interact('bird1')">🐦</div>
-            <div class="animal bird2" onclick="interact('bird2')">🕊️</div>
+    <div id="canvas-container">
+        <div class="controls-bar">
+            <button class="control-btn" onclick="toggleLights()" id="light-btn">💡 Turn Off Lights</button>
+            <button class="control-btn" onclick="switchPet()">🐶 Switch Pet</button>
         </div>
     </div>
 
     <div class="message-box">
-        <p id="main-text">Hey Arwa. Take a deep breath, tap around the room whenever you need a little reminder of how capable you are.</p>
+        <p id="main-text">Welcome to your full 3D room, Arwa! Drag to rotate, tap the bed, click the PC monitor to read messages, or tap your pet.</p>
+        <div class="nav-buttons" id="nav-container">
+            <button class="nav-btn" id="prev-btn" onclick="prevMessage()">◀ Prev</button>
+            <button class="nav-btn" id="next-btn" onclick="nextMessage()">Next ▶</button>
+        </div>
     </div>
-    <div class="hint">✨ Tap anything in the room ✨</div>
+    <div class="hint">✨ Touch & drag to look around 3D space ✨</div>
 
     <script>
-        let currentRoom = 1;
+        let scene, camera, renderer;
+        let ambientLight, directionalLight;
+        let lightsOn = true;
 
-        function switchRoom() {
-            playClickSound();
-            const r1 = document.getElementById('room1');
-            const r2 = document.getElementById('room2');
-            const btn = document.getElementById('switch-btn');
-            const textElement = document.getElementById('main-text');
+        // Interactive meshes
+        let bedGroup, pcMonitorMesh, petMesh;
+        let petTypeIndex = 0;
+        const petTypes = ['dog', 'cat', 'bird', 'bunny'];
+        const petEmojis = ['🐶', '🐱', '🐦', '🐰'];
+        const petNames = ['Doggo', 'Kitty', 'Birdie', 'Bunny'];
 
-            if (currentRoom === 1) {
-                r1.classList.remove('active');
-                r2.classList.add('active');
-                btn.innerText = "Switch to Desk Room 💻";
-                currentRoom = 2;
-                textElement.innerText = "Welcome to your cozy animal sanctuary. Tap the pets, the organized bed, or the PC whenever you want to smile.";
-            } else {
-                r2.classList.remove('active');
-                r1.classList.add('active');
-                btn.innerText = "Switch to Cozy Sanctuary 🐾";
-                currentRoom = 1;
-                textElement.innerText = "Back at the main desk. Take a deep breath and tap around.";
-            }
+        let viewingComputer = false;
+        let currentMessageIndex = 0;
+
+        const computerMessages = [
+            "At least in computer science, if your code fails you just hit Ctrl+Z instead of accidentally ending up in a malpractice lawsuit.",
+            "Arwa, you actually have full control over your sanity here. No gross anatomy labs at 8 AM, just pure logic and your own setup.",
+            "Think about how cool it is that you can build literally anything you imagine from a laptop screen. You are setting yourself up for an amazing future.",
+            "Two weeks into faculty life is always chaotic. Everything is new, everyone looks lost, and you are just trying to figure out where your lectures are. Give yourself permission to not have it all figured out right now.",
+            "You survived Thanaweya Amma. Let that sink in. You went through the ultimate Egyptian academic gauntlet and came out on top, so this new chapter is entirely manageable for you.",
+            "Choosing computer science over med school was not backing down from a challenge. It was a smart, conscious choice to protect your mental health and your future. Be proud of that."
+        ];
+
+        // Orbit Control variables for touch/mouse drag
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let cameraAngleX = 0.3;
+        let cameraAngleY = 0.8;
+        let cameraRadius = 8.5;
+
+        init();
+        animate();
+
+        function init() {
+            const container = document.getElementById('canvas-container');
+
+            // 1. Scene setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xfcfbf9);
+
+            // 2. Camera setup
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            updateCameraPosition();
+
+            // 3. Renderer setup
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+
+            // 4. Lighting
+            ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+            scene.add(ambientLight);
+
+            directionalLight = new THREE.DirectionalLight(0xfffaed, 0.9);
+            directionalLight.position.set(4, 7, 5);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 1024;
+            directionalLight.shadow.mapSize.height = 1024;
+            scene.add(directionalLight);
+
+            // 5. Build Room Environment
+            buildRoom();
+
+            // 6. Event Listeners for Interaction & Orbit
+            renderer.domElement.addEventListener('pointerdown', onPointerDown, false);
+            renderer.domElement.addEventListener('pointermove', onPointerMove, false);
+            renderer.domElement.addEventListener('pointerup', onPointerUp, false);
+            renderer.domElement.addEventListener('click', onClick, false);
+
+            window.addEventListener('resize', onWindowResize, false);
         }
 
-        function playClickSound() {
+        function updateCameraPosition() {
+            camera.position.x = cameraRadius * Math.sin(cameraAngleY) * Math.cos(cameraAngleX);
+            camera.position.y = cameraRadius * Math.sin(cameraAngleX) + 1.2;
+            camera.position.z = cameraRadius * Math.cos(cameraAngleY) * Math.cos(cameraAngleX);
+            camera.lookAt(0, 1.2, 0);
+        }
+
+        function buildRoom() {
+            // Walls (Back and Left)
+            const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xfcfbf9, roughness: 0.9 });
+            
+            const backWallGeo = new THREE.BoxGeometry(8, 6, 0.2);
+            const backWall = new THREE.Mesh(backWallGeo, wallMaterial);
+            backWall.position.set(0, 3, -4);
+            backWall.receiveShadow = true;
+            scene.add(backWall);
+
+            const leftWallGeo = new THREE.BoxGeometry(0.2, 6, 8);
+            const leftWall = new THREE.Mesh(leftWallGeo, wallMaterial);
+            leftWall.position.set(-4, 3, 0);
+            leftWall.receiveShadow = true;
+            scene.add(leftWall);
+
+            // Wooden Floor
+            const floorGeo = new THREE.PlaneGeometry(8, 8);
+            const floorMat = new THREE.MeshStandardMaterial({ color: 0x9c6b43, roughness: 0.7 });
+            const floor = new THREE.Mesh(floorGeo, floorMat);
+            floor.rotation.x = -Math.PI / 2;
+            floor.receiveShadow = true;
+            scene.add(floor);
+
+            // --- BED (with Pink & White Sheets) ---
+            bedGroup = new THREE.Group();
+            bedGroup.userData = { type: 'bed' };
+
+            // Bed Frame & Mattress
+            const mattressGeo = new THREE.BoxGeometry(2.2, 0.5, 3.2);
+            const mattressMat = new THREE.MeshStandardMaterial({ color: 0xfbcfe8, roughness: 0.8 }); // Pink
+            const mattress = new THREE.Mesh(mattressGeo, mattressMat);
+            mattress.position.set(0, 0.25, 0);
+            mattress.castShadow = true;
+            mattress.receiveShadow = true;
+            bedGroup.add(mattress);
+
+            // White Sheets/Blanket cover
+            const blanketGeo = new THREE.BoxGeometry(2.0, 0.52, 2.2);
+            const blanketMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9 }); // White
+            const blanket = new THREE.Mesh(blanketGeo, blanketMat);
+            blanket.position.set(0, 0.28, 0.5);
+            blanket.castShadow = true;
+            bedGroup.add(blanket);
+
+            // Pillows
+            const pillowGeo = new THREE.BoxGeometry(0.8, 0.2, 0.6);
+            const pillowMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9 });
+            const pillow1 = new THREE.Mesh(pillowGeo, pillowMat);
+            pillow1.position.set(-0.5, 0.55, -1.1);
+            pillow1.castShadow = true;
+            bedGroup.add(pillow1);
+
+            const pillow2 = new THREE.Mesh(pillowGeo, pillowMat);
+            pillow2.position.set(0.5, 0.55, -1.1);
+            pillow2.castShadow = true;
+            bedGroup.add(pillow2);
+
+            bedGroup.position.set(-2.2, 0, -1.8);
+            scene.add(bedGroup);
+
+            // --- DESK & PC MONITOR SETUP ---
+            const deskGroup = new THREE.Group();
+
+            // Desk Top
+            const deskTopGeo = new THREE.BoxGeometry(2.6, 0.1, 1.3);
+            const deskMat = new THREE.MeshStandardMaterial({ color: 0x5c3a1e, roughness: 0.6 });
+            const deskTop = new THREE.Mesh(deskTopGeo, deskMat);
+            deskTop.position.set(0, 1.1, 0);
+            deskTop.castShadow = true;
+            deskTop.receiveShadow = true;
+            deskGroup.add(deskTop);
+
+            // Desk Legs
+            const legGeo = new THREE.CylinderGeometry(0.06, 0.06, 1.1);
+            const legMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
+            [-1.15, 1.15].forEach(x => {
+                [-0.5, 0.5].forEach(z => {
+                    const leg = new THREE.Mesh(legGeo, legMat);
+                    leg.position.set(x, 0.55, z);
+                    leg.castShadow = true;
+                    deskGroup.add(leg);
+                });
+            });
+
+            // PC Monitor (Interactive)
+            pcMonitorMesh = new THREE.Group();
+            pcMonitorMesh.userData = { type: 'pc' };
+
+            const standGeo = new THREE.BoxGeometry(0.2, 0.3, 0.2);
+            const standMat = new THREE.MeshStandardMaterial({ color: 0x333333 });
+            const stand = new THREE.Mesh(standGeo, standMat);
+            stand.position.set(0, 1.25, 0);
+            pcMonitorMesh.add(stand);
+
+            const monitorBodyGeo = new THREE.BoxGeometry(1.2, 0.8, 0.1);
+            const monitorBodyMat = new THREE.MeshStandardMaterial({ color: 0x1e293b });
+            const monitorBody = new THREE.Mesh(monitorBodyGeo, monitorBodyMat);
+            monitorBody.position.set(0, 1.75, 0);
+            pcMonitorMesh.add(monitorBody);
+
+            // Monitor Screen Text / Color
+            const screenGeo = new THREE.PlaneGeometry(1.05, 0.68);
+            const screenMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
+            const screen = new THREE.Mesh(screenGeo, screenMat);
+            screen.position.set(0, 1.75, 0.06);
+            pcMonitorMesh.add(screen);
+
+            deskGroup.add(pcMonitorMesh);
+            deskGroup.position.set(1.5, 0, -1.8);
+            scene.add(deskGroup);
+
+            // --- PET ---
+            spawnPet();
+        }
+
+        function spawnPet() {
+            if (petMesh) scene.remove(petMesh);
+
+            petMesh = new THREE.Group();
+            petMesh.userData = { type: 'pet' };
+
+            // Cute stylized low-poly pet representation
+            const bodyGeo = new THREE.SphereGeometry(0.35, 16, 16);
+            const bodyMat = new THREE.MeshStandardMaterial({ color: petTypeIndex === 0 ? 0xd97706 : petTypeIndex === 1 ? 0x94a3b8 : petTypeIndex === 2 ? 0x38bdf8 : 0xf472b6, roughness: 0.7 });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            body.position.set(0, 0.35, 0);
+            body.castShadow = true;
+            petMesh.add(body);
+
+            const headGeo = new THREE.SphereGeometry(0.25, 16, 16);
+            const head = new THREE.Mesh(headGeo, bodyMat);
+            head.position.set(0, 0.7, 0.15);
+            head.castShadow = true;
+            petMesh.add(head);
+
+            petMesh.position.set(0.8, 0, 0.5);
+            scene.add(petMesh);
+        }
+
+        // --- Interaction & Controls ---
+        function playSound(freq1, freq2) {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const osc = audioCtx.createOscillator();
                 const gainNode = audioCtx.createGain();
                 
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(580, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.08);
+                osc.frequency.setValueAtTime(freq1, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(freq2, audioCtx.currentTime + 0.1);
                 
                 gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
                 
                 osc.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
                 
                 osc.start();
-                osc.stop(audioCtx.currentTime + 0.08);
-            } catch (e) {
-                // AudioContext blocked or not supported
+                osc.stop(audioCtx.currentTime + 0.1);
+            } catch (e) {}
+        }
+
+        function toggleLights() {
+            playSound(400, 300);
+            lightsOn = !lightsOn;
+            const btn = document.getElementById('light-btn');
+            const textElement = document.getElementById('main-text');
+
+            if (lightsOn) {
+                scene.background.setHex(0xfcfbf9);
+                ambientLight.intensity = 0.65;
+                directionalLight.intensity = 0.9;
+                btn.innerText = "💡 Turn Off Lights";
+                textElement.innerText = "Lights are back on! Room is bright and cozy.";
+            } else {
+                scene.background.setHex(0x0e0c14);
+                ambientLight.intensity = 0.15;
+                directionalLight.intensity = 0.2;
+                btn.innerText = "💡 Turn On Lights";
+                textElement.innerText = "Lights are off. Enjoy the calm, relaxing nighttime ambiance.";
+            }
+            hideNav();
+        }
+
+        function switchPet() {
+            playSound(500, 700);
+            petTypeIndex = (petTypeIndex + 1) % petTypes.length;
+            spawnPet();
+            const textElement = document.getElementById('main-text');
+            textElement.innerText = `Say hello to your cute little ${petNames[petTypeIndex]} (${petEmojis[petTypeIndex]})! Tap it to play.`;
+            hideNav();
+        }
+
+        function interactPet() {
+            playSound(600, 900);
+            const textElement = document.getElementById('main-text');
+            const pet = petNames[petTypeIndex];
+            
+            let noise = "Woof woof!";
+            if(pet === 'Kitty') noise = "Purrrr meow~";
+            if(pet === 'Birdie') noise = "Chirp chirp! YOU GOT THIS ARWA!";
+            if(pet === 'Bunny') noise = "Boop! Soft hops!";
+
+            textElement.innerText = `${petEmojis[petTypeIndex]} ${noise} Your furry little companion is keeping you company in 3D!`;
+            hideNav();
+        }
+
+        function interactBed() {
+            playSound(350, 450);
+            const textElement = document.getElementById('main-text');
+            textElement.innerText = "Arwa, a completely made, cozy pink and white bed is waiting for you whenever you need to rest and reset your mind.";
+            hideNav();
+        }
+
+        function openComputer() {
+            playSound(500, 800);
+            viewingComputer = true;
+            currentMessageIndex = 0;
+            updateComputerDisplay();
+            document.getElementById('nav-container').style.display = 'flex';
+            document.getElementById('prev-btn').style.display = 'inline-block';
+            document.getElementById('next-btn').style.display = 'inline-block';
+        }
+
+        function updateComputerDisplay() {
+            const textElement = document.getElementById('main-text');
+            textElement.style.opacity = 0;
+            setTimeout(() => {
+                textElement.innerText = `[PC Screen - Message ${currentMessageIndex + 1}/${computerMessages.length}]\n\n"${computerMessages[currentMessageIndex]}"`;
+                textElement.style.opacity = 1;
+            }, 100);
+        }
+
+        function nextMessage() {
+            playSound(700, 850);
+            currentMessageIndex = (currentMessageIndex + 1) % computerMessages.length;
+            updateComputerDisplay();
+        }
+
+        function prevMessage() {
+            playSound(850, 700);
+            currentMessageIndex = (currentMessageIndex - 1 + computerMessages.length) % computerMessages.length;
+            updateComputerDisplay();
+        }
+
+        function hideNav() {
+            viewingComputer = false;
+            document.getElementById('nav-container').style.display = 'none';
+        }
+
+        // --- Raycasting for 3D Object clicks ---
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        function onClick(event) {
+            // Only trigger if it wasn't a drag
+            const rect = renderer.domElement.getBoundingClientRect();
+            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(scene.children, true);
+
+            if (intersects.length > 0) {
+                let obj = intersects[0].object;
+                // Traverse up to find group with userData
+                while (obj && !obj.userData.type && obj.parent) {
+                    obj = obj.parent;
+                }
+
+                if (obj && obj.userData.type) {
+                    if (obj.userData.type === 'bed') interactBed();
+                    else if (obj.userData.type === 'pc') openComputer();
+                    else if (obj.userData.type === 'pet') interactPet();
+                }
             }
         }
 
-        const messages = {
-            parrot: [
-                "YOU GOT THIS ARWA!"
-            ],
-            laptop: [
-                "At least in computer science, if your code fails you just hit Ctrl+Z instead of accidentally ending up in a malpractice lawsuit.",
-                "Arwa, you actually have full control over your sanity here. No gross anatomy labs at 8 AM, just pure logic and your own setup.",
-                "Think about how cool it is that you can build literally anything you imagine from a laptop screen. You are setting yourself up for an amazing future."
-            ],
-            plant: [
-                "Two weeks into faculty life is always chaotic. Everything is new, everyone looks lost, and you are just trying to figure out where your lectures are. Give yourself permission to not have it all figured out right now.",
-                "You survived Thanaweya Amma. Let that sink in. You went through the ultimate Egyptian academic gauntlet and came out on top, so this new chapter is entirely manageable for you.",
-                "It is okay to feel nervous. Big changes feel scary because you care about doing well, but you are more than capable of handling this transition."
-            ],
-            mug: [
-                "Mandatory water and sanity check. Put the overthinking down for five minutes, roll your shoulders back, and relax.",
-                "Seriously, go grab something to drink. The tanseeq stress can wait; your peace of mind comes first."
-            ],
-            window: [
-                "Look outside for a second. The world did not end because you skipped med school. Your life is yours to shape, and you chose a path that gives you actual time to breathe and live.",
-                "Step by step, day by day. You do not need to have your entire career mapped out this month. Just focus on getting through today comfortably."
-            ],
-            frame: [
-                "Arwa, you earned those high grades through sheer hard work and late nights. That brilliant brain of yours is going to shine wherever you put it.",
-                "Choosing computer science over med school was not backing down from a challenge. It was a smart, conscious choice to protect your mental health and your future. Be proud of that."
-            ],
-            bed: [
-                "A completely made, tidy bed is the ultimate safe haven after a long day of classes. Crawl in mentally whenever things feel too loud.",
-                "Rest is not a reward you have to earn. It is a requirement. Give yourself permission to unwind properly."
-            ],
-            pc: [
-                "Arwa, this setup is your absolute kingdom. You can build incredible applications right here without ever stepping foot inside a hospital.",
-                "Coding on a proper monitor setup hits different. You made the right call choosing software engineering."
-            ],
-            dog1: [
-                "Woof! The doggos are officially declaring you the smartest computer science student in Egypt. No arguments allowed."
-            ],
-            dog2: [
-                "A very happy pup wags its tail every time you remember that you survived Thanaweya Amma."
-            ],
-            cat1: [
-                "Purrr. The cat insists that you stretch your legs, drink some water, and stop stressing over university courses."
-            ],
-            cat2: [
-                "A sleepy kitty curls up nearby to remind you that life is too short to worry about alternate timelines."
-            ],
-            bird1: [
-                "Chirp chirp! Your little bird friends say everything is going to turn out wonderfully."
-            ],
-            bird2: [
-                "A gentle tweet wishing you an amazing semester ahead."
-            ]
-        };
+        // --- Orbit controls for touch and mouse drag ---
+        function onPointerDown(e) {
+            isDragging = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        }
 
-        function interact(category) {
-            playClickSound();
-            const categoryMessages = messages[category];
-            const randomIndex = Math.floor(Math.random() * categoryMessages.length);
-            const textElement = document.getElementById('main-text');
-            
-            textElement.style.opacity = 0;
-            setTimeout(() => {
-                textElement.innerText = categoryMessages[randomIndex];
-                textElement.style.opacity = 1;
-            }, 150);
+        function onPointerMove(e) {
+            if (!isDragging) return;
+
+            const deltaX = e.clientX - previousMousePosition.x;
+            const deltaY = e.clientY - previousMousePosition.y;
+
+            cameraAngleY -= deltaX * 0.008;
+            cameraAngleX += deltaY * 0.008;
+
+            // Clamp vertical angle to keep room upright
+            cameraAngleX = Math.max(0.05, Math.min(Math.PI / 2 - 0.05, cameraAngleX));
+
+            updateCameraPosition();
+
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        }
+
+        function onPointerUp() {
+            isDragging = false;
+        }
+
+        function onWindowResize() {
+            const container = document.getElementById('canvas-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
         }
     </script>
 </body>
