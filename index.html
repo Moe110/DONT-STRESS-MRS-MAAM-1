@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arwa's 3D Cozy Room</title>
+    <title>Arwa's 3D Whole House</title>
     <style>
         * {
             box-sizing: border-box;
@@ -27,8 +27,8 @@
         #canvas-container {
             position: relative;
             width: 100%;
-            max-width: 480px;
-            height: 480px;
+            max-width: 520px;
+            height: 460px;
             border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.6);
             border: 3px solid #3d364a;
@@ -45,21 +45,23 @@
 
         .controls-bar {
             position: absolute;
-            top: 15px;
+            top: 12px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 8px;
+            gap: 6px;
             z-index: 10;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .control-btn {
             background: rgba(45, 38, 59, 0.85);
             color: #f3f0ea;
             border: 2px solid #7c3aed;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 11px;
+            padding: 5px 10px;
+            border-radius: 14px;
+            font-size: 10.5px;
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             backdrop-filter: blur(4px);
@@ -71,15 +73,50 @@
             background: rgba(107, 83, 130, 0.9);
         }
 
+        .dpad-container {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            display: grid;
+            grid-template-columns: repeat(3, 36px);
+            grid-template-rows: repeat(2, 36px);
+            gap: 4px;
+            z-index: 10;
+        }
+
+        .dpad-btn {
+            background: rgba(45, 38, 59, 0.85);
+            color: #f3f0ea;
+            border: 2px solid #7c3aed;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            backdrop-filter: blur(4px);
+        }
+
+        .dpad-btn:active {
+            background: #7c3aed;
+        }
+
+        .dpad-up { grid-column: 2; grid-row: 1; }
+        .dpad-left { grid-column: 1; grid-row: 2; }
+        .dpad-down { grid-column: 2; grid-row: 2; }
+        .dpad-right { grid-column: 3; grid-row: 2; }
+
         .message-box {
-            margin-top: 15px;
+            margin-top: 12px;
             width: 100%;
-            max-width: 480px;
-            min-height: 95px;
+            max-width: 520px;
+            min-height: 85px;
             background: #2d263b;
             border: 2px solid #5d5070;
             border-radius: 14px;
-            padding: 14px 18px;
+            padding: 12px 16px;
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -89,32 +126,36 @@
         }
 
         .message-box p {
-            font-size: 13.5px;
-            line-height: 1.5;
+            font-size: 13px;
+            line-height: 1.4;
             color: #e2e8f0;
             transition: opacity 0.15s ease;
         }
 
-        .nav-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 8px;
-        }
-
-        .nav-btn {
-            background: #4a3b5c;
-            color: #f3f0ea;
-            border: 1px solid #7c3aed;
-            padding: 4px 12px;
-            border-radius: 8px;
+        .action-prompt {
+            margin-top: 6px;
+            background: #7c3aed;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 10px;
             font-size: 11px;
+            font-weight: bold;
             cursor: pointer;
             display: none;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         .hint {
-            margin-top: 8px;
-            font-size: 11px;
+            margin-top: 6px;
+            font-size: 10.5px;
             color: #94a3b8;
             letter-spacing: 0.5px;
         }
@@ -127,50 +168,47 @@
 
     <div id="canvas-container">
         <div class="controls-bar">
-            <button class="control-btn" onclick="toggleLights()" id="light-btn">💡 Turn Off Lights</button>
-            <button class="control-btn" onclick="switchPet()">🐶 Switch Pet</button>
+            <button class="control-btn" onclick="toggleLights()" id="light-btn">💡 Lights Off</button>
+            <button class="control-btn" onclick="resetPosition()">🏠 Center View</button>
+        </div>
+
+        <div class="dpad-container">
+            <button class="dpad-btn dpad-up" ontouchstart="startMove('w')" ontouchend="stopMove('w')" onmousedown="startMove('w')" onmouseup="stopMove('w')">⬆️</button>
+            <button class="dpad-btn dpad-left" ontouchstart="startMove('a')" ontouchend="stopMove('a')" onmousedown="startMove('a')" onmouseup="stopMove('a')">⬅️</button>
+            <button class="dpad-btn dpad-down" ontouchstart="startMove('s')" ontouchend="stopMove('s')" onmousedown="startMove('s')" onmouseup="stopMove('s')">⬇️</button>
+            <button class="dpad-btn dpad-right" ontouchstart="startMove('d')" ontouchend="stopMove('d')" onmousedown="startMove('d')" onmouseup="stopMove('d')">➡️</button>
         </div>
     </div>
 
     <div class="message-box">
-        <p id="main-text">Welcome to your full 3D room, Arwa! Drag to rotate, tap the bed, click the PC monitor to read messages, or tap your pet.</p>
-        <div class="nav-buttons" id="nav-container">
-            <button class="nav-btn" id="prev-btn" onclick="prevMessage()">◀ Prev</button>
-            <button class="nav-btn" id="next-btn" onclick="nextMessage()">Next ▶</button>
-        </div>
+        <p id="main-text">use WASD or the buttons on screen to walk cuteeee arwa around her whole house explore the rooms and find cuteeee pets hiding in every corner</p>
+        <button id="interact-prompt" class="action-prompt" onclick="interactWithNearbyPet()">pet the animal</button>
     </div>
-    <div class="hint">✨ Touch & drag to look around 3D space ✨</div>
+    <div class="hint">✨ walk close to any pet to interact with it cuteeee ✨</div>
 
     <script>
         let scene, camera, renderer;
         let ambientLight, directionalLight;
         let lightsOn = true;
 
-        // Interactive meshes
-        let bedGroup, pcMonitorMesh, petMesh;
-        let petTypeIndex = 0;
-        const petTypes = ['dog', 'cat', 'bird', 'bunny'];
-        const petEmojis = ['🐶', '🐱', '🐦', '🐰'];
-        const petNames = ['Doggo', 'Kitty', 'Birdie', 'Bunny'];
+        // Character variables
+        let characterGroup;
+        let charPosition = { x: 0, z: 0 };
+        let charRotation = 0;
+        const charSpeed = 0.055;
+        const keys = { w: false, a: false, s: false, d: false };
 
-        let viewingComputer = false;
-        let currentMessageIndex = 0;
-
-        const computerMessages = [
-            "At least in computer science, if your code fails you just hit Ctrl+Z instead of accidentally ending up in a malpractice lawsuit.",
-            "Arwa, you actually have full control over your sanity here. No gross anatomy labs at 8 AM, just pure logic and your own setup.",
-            "Think about how cool it is that you can build literally anything you imagine from a laptop screen. You are setting yourself up for an amazing future.",
-            "Two weeks into faculty life is always chaotic. Everything is new, everyone looks lost, and you are just trying to figure out where your lectures are. Give yourself permission to not have it all figured out right now.",
-            "You survived Thanaweya Amma. Let that sink in. You went through the ultimate Egyptian academic gauntlet and came out on top, so this new chapter is entirely manageable for you.",
-            "Choosing computer science over med school was not backing down from a challenge. It was a smart, conscious choice to protect your mental health and your future. Be proud of that."
+        // Pets list around the house
+        const pets = [
+            { x: -3.5, z: -3.5, type: 'dog', name: 'goldie', emoji: '🐶', active: false, msg: "goldie wags its tail happily and gives you a cuteeee warm hug" },
+            { x: 3.5, z: -3.5, type: 'cat', name: 'luna', emoji: '🐱', active: false, msg: "luna purrs softly and rubs against your shoes cuteeee kitty cuddles" },
+            { x: -3.5, z: 3.5, type: 'bird', name: 'chirpy', emoji: '🐦', active: false, msg: "chirpy sings a cheerful little melody just for you cuteeee feathery friend" },
+            { x: 3.5, z: 3.5, type: 'bunny', name: 'hop', emoji: '🐰', active: false, msg: "hop does a tiny little joyful jump right in front of you cuteeee bunny energy" }
         ];
+        let activeNearbyPet = null;
 
-        // Orbit Control variables for touch/mouse drag
-        let isDragging = false;
-        let previousMousePosition = { x: 0, y: 0 };
-        let cameraAngleX = 0.3;
-        let cameraAngleY = 0.8;
-        let cameraRadius = 8.5;
+        // House boundaries for wall collisions
+        const minX = -4.7, maxX = 4.7, minZ = -4.7, maxZ = 4.7;
 
         init();
         animate();
@@ -182,9 +220,8 @@
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0xfcfbf9);
 
-            // 2. Camera setup
-            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-            updateCameraPosition();
+            // 2. Camera setup (Third person view following character)
+            camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
 
             // 3. Renderer setup
             renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -198,192 +235,180 @@
             scene.add(ambientLight);
 
             directionalLight = new THREE.DirectionalLight(0xfffaed, 0.9);
-            directionalLight.position.set(4, 7, 5);
+            directionalLight.position.set(6, 10, 6);
             directionalLight.castShadow = true;
             directionalLight.shadow.mapSize.width = 1024;
             directionalLight.shadow.mapSize.height = 1024;
             scene.add(directionalLight);
 
-            // 5. Build Room Environment
-            buildRoom();
+            // 5. Build Whole House & Decor
+            buildHouse();
 
-            // 6. Event Listeners for Interaction & Orbit
-            renderer.domElement.addEventListener('pointerdown', onPointerDown, false);
-            renderer.domElement.addEventListener('pointermove', onPointerMove, false);
-            renderer.domElement.addEventListener('pointerup', onPointerUp, false);
-            renderer.domElement.addEventListener('click', onClick, false);
+            // 6. Build Character
+            buildCharacter();
 
+            // 7. Build Pets
+            buildPets();
+
+            // 8. Event listeners for keyboard
+            window.addEventListener('keydown', (e) => handleKey(e, true));
+            window.addEventListener('keyup', (e) => handleKey(e, false));
             window.addEventListener('resize', onWindowResize, false);
         }
 
-        function updateCameraPosition() {
-            camera.position.x = cameraRadius * Math.sin(cameraAngleY) * Math.cos(cameraAngleX);
-            camera.position.y = cameraRadius * Math.sin(cameraAngleX) + 1.2;
-            camera.position.z = cameraRadius * Math.cos(cameraAngleY) * Math.cos(cameraAngleX);
-            camera.lookAt(0, 1.2, 0);
-        }
-
-        function buildRoom() {
-            // Walls (Back and Left)
-            const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xfcfbf9, roughness: 0.9 });
-            
-            const backWallGeo = new THREE.BoxGeometry(8, 6, 0.2);
-            const backWall = new THREE.Mesh(backWallGeo, wallMaterial);
-            backWall.position.set(0, 3, -4);
-            backWall.receiveShadow = true;
-            scene.add(backWall);
-
-            const leftWallGeo = new THREE.BoxGeometry(0.2, 6, 8);
-            const leftWall = new THREE.Mesh(leftWallGeo, wallMaterial);
-            leftWall.position.set(-4, 3, 0);
-            leftWall.receiveShadow = true;
-            scene.add(leftWall);
-
-            // Wooden Floor
-            const floorGeo = new THREE.PlaneGeometry(8, 8);
-            const floorMat = new THREE.MeshStandardMaterial({ color: 0x9c6b43, roughness: 0.7 });
+        function buildHouse() {
+            // House Floor with wood planks look
+            const floorGeo = new THREE.PlaneGeometry(10, 10);
+            const floorMat = new THREE.MeshStandardMaterial({ color: 0x8a5a36, roughness: 0.75 });
             const floor = new THREE.Mesh(floorGeo, floorMat);
             floor.rotation.x = -Math.PI / 2;
             floor.receiveShadow = true;
             scene.add(floor);
 
-            // --- BED (with Pink & White Sheets) ---
-            bedGroup = new THREE.Group();
-            bedGroup.userData = { type: 'bed' };
+            // House Outer Walls
+            const wallMat = new THREE.MeshStandardMaterial({ color: 0xf3f0ea, roughness: 0.9 });
+            
+            // Back Wall
+            const backWall = new THREE.Mesh(new THREE.BoxGeometry(10, 5, 0.3), wallMat);
+            backWall.position.set(0, 2.5, -5);
+            backWall.receiveShadow = true;
+            scene.add(backWall);
 
-            // Bed Frame & Mattress
-            const mattressGeo = new THREE.BoxGeometry(2.2, 0.5, 3.2);
-            const mattressMat = new THREE.MeshStandardMaterial({ color: 0xfbcfe8, roughness: 0.8 }); // Pink
-            const mattress = new THREE.Mesh(mattressGeo, mattressMat);
-            mattress.position.set(0, 0.25, 0);
+            // Left Wall
+            const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.3, 5, 10), wallMat);
+            leftWall.position.set(-5, 2.5, 0);
+            leftWall.receiveShadow = true;
+            scene.add(leftWall);
+
+            // Right Wall
+            const rightWall = new THREE.Mesh(new THREE.BoxGeometry(0.3, 5, 10), wallMat);
+            rightWall.position.set(5, 2.5, 0);
+            rightWall.receiveShadow = true;
+            scene.add(rightWall);
+
+            // Front Wall (partial)
+            const frontWall1 = new THREE.Mesh(new THREE.BoxGeometry(3.5, 5, 0.3), wallMat);
+            frontWall1.position.set(-3.25, 2.5, 5);
+            scene.add(frontWall1);
+            const frontWall2 = new THREE.Mesh(new THREE.BoxGeometry(3.5, 5, 0.3), wallMat);
+            frontWall2.position.set(3.25, 2.5, 5);
+            scene.add(frontWall2);
+
+            // Interior dividing wall (making multiple rooms)
+            const dividerMat = new THREE.MeshStandardMaterial({ color: 0xe6e0d5, roughness: 0.8 });
+            const divWall = new THREE.Mesh(new THREE.BoxGeometry(0.2, 5, 5), dividerMat);
+            divWall.position.set(0, 2.5, -2.5);
+            scene.add(divWall);
+
+            // --- DECOR & CARPETS ---
+            // Living Room Cozy Rug
+            const rugGeo = new THREE.PlaneGeometry(3, 2.5);
+            const rugMat = new THREE.MeshStandardMaterial({ color: 0x7c3aed, roughness: 0.9 });
+            const rug = new THREE.Mesh(rugGeo, rugMat);
+            rug.rotation.x = -Math.PI / 2;
+            rug.position.set(0, 0.01, 2);
+            scene.add(rug);
+
+            // Bedroom Bed
+            const bedGroup = new THREE.Group();
+            const mattress = new THREE.Mesh(
+                new THREE.BoxGeometry(2, 0.4, 2.8),
+                new THREE.MeshStandardMaterial({ color: 0xf472b6, roughness: 0.8 })
+            );
+            mattress.position.set(0, 0.2, 0);
             mattress.castShadow = true;
-            mattress.receiveShadow = true;
             bedGroup.add(mattress);
-
-            // White Sheets/Blanket cover
-            const blanketGeo = new THREE.BoxGeometry(2.0, 0.52, 2.2);
-            const blanketMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9 }); // White
-            const blanket = new THREE.Mesh(blanketGeo, blanketMat);
-            blanket.position.set(0, 0.28, 0.5);
-            blanket.castShadow = true;
+            
+            const blanket = new THREE.Mesh(
+                new THREE.BoxGeometry(1.8, 0.42, 1.8),
+                new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9 })
+            );
+            blanket.position.set(0, 0.22, 0.4);
             bedGroup.add(blanket);
-
-            // Pillows
-            const pillowGeo = new THREE.BoxGeometry(0.8, 0.2, 0.6);
-            const pillowMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9 });
-            const pillow1 = new THREE.Mesh(pillowGeo, pillowMat);
-            pillow1.position.set(-0.5, 0.55, -1.1);
-            pillow1.castShadow = true;
-            bedGroup.add(pillow1);
-
-            const pillow2 = new THREE.Mesh(pillowGeo, pillowMat);
-            pillow2.position.set(0.5, 0.55, -1.1);
-            pillow2.castShadow = true;
-            bedGroup.add(pillow2);
-
-            bedGroup.position.set(-2.2, 0, -1.8);
+            
+            bedGroup.position.set(-3.2, 0, -3.2);
             scene.add(bedGroup);
 
-            // --- DESK & PC MONITOR SETUP ---
-            const deskGroup = new THREE.Group();
+            // Study Desk & PC Setup in office room
+            const desk = new THREE.Mesh(
+                new THREE.BoxGeometry(2.2, 0.1, 1.2),
+                new THREE.MeshStandardMaterial({ color: 0x4a3b5c })
+            );
+            desk.position.set(2.8, 1.0, -3.2);
+            desk.castShadow = true;
+            scene.add(desk);
 
-            // Desk Top
-            const deskTopGeo = new THREE.BoxGeometry(2.6, 0.1, 1.3);
-            const deskMat = new THREE.MeshStandardMaterial({ color: 0x5c3a1e, roughness: 0.6 });
-            const deskTop = new THREE.Mesh(deskTopGeo, deskMat);
-            deskTop.position.set(0, 1.1, 0);
-            deskTop.castShadow = true;
-            deskTop.receiveShadow = true;
-            deskGroup.add(deskTop);
-
-            // Desk Legs
-            const legGeo = new THREE.CylinderGeometry(0.06, 0.06, 1.1);
-            const legMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
-            [-1.15, 1.15].forEach(x => {
-                [-0.5, 0.5].forEach(z => {
-                    const leg = new THREE.Mesh(legGeo, legMat);
-                    leg.position.set(x, 0.55, z);
-                    leg.castShadow = true;
-                    deskGroup.add(leg);
-                });
-            });
-
-            // PC Monitor (Interactive)
-            pcMonitorMesh = new THREE.Group();
-            pcMonitorMesh.userData = { type: 'pc' };
-
-            const standGeo = new THREE.BoxGeometry(0.2, 0.3, 0.2);
-            const standMat = new THREE.MeshStandardMaterial({ color: 0x333333 });
-            const stand = new THREE.Mesh(standGeo, standMat);
-            stand.position.set(0, 1.25, 0);
-            pcMonitorMesh.add(stand);
-
-            const monitorBodyGeo = new THREE.BoxGeometry(1.2, 0.8, 0.1);
-            const monitorBodyMat = new THREE.MeshStandardMaterial({ color: 0x1e293b });
-            const monitorBody = new THREE.Mesh(monitorBodyGeo, monitorBodyMat);
-            monitorBody.position.set(0, 1.75, 0);
-            pcMonitorMesh.add(monitorBody);
-
-            // Monitor Screen Text / Color
-            const screenGeo = new THREE.PlaneGeometry(1.05, 0.68);
-            const screenMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
-            const screen = new THREE.Mesh(screenGeo, screenMat);
-            screen.position.set(0, 1.75, 0.06);
-            pcMonitorMesh.add(screen);
-
-            deskGroup.add(pcMonitorMesh);
-            deskGroup.position.set(1.5, 0, -1.8);
-            scene.add(deskGroup);
-
-            // --- PET ---
-            spawnPet();
+            const pcScreen = new THREE.Mesh(
+                new THREE.BoxGeometry(1.0, 0.6, 0.08),
+                new THREE.MeshStandardMaterial({ color: 0x1e293b, emissive: 0x0f172a })
+            );
+            pcScreen.position.set(2.8, 1.5, -3.3);
+            scene.add(pcScreen);
         }
 
-        function spawnPet() {
-            if (petMesh) scene.remove(petMesh);
+        function buildCharacter() {
+            characterGroup = new THREE.Group();
 
-            petMesh = new THREE.Group();
-            petMesh.userData = { type: 'pet' };
-
-            // Cute stylized low-poly pet representation
-            const bodyGeo = new THREE.SphereGeometry(0.35, 16, 16);
-            const bodyMat = new THREE.MeshStandardMaterial({ color: petTypeIndex === 0 ? 0xd97706 : petTypeIndex === 1 ? 0x94a3b8 : petTypeIndex === 2 ? 0x38bdf8 : 0xf472b6, roughness: 0.7 });
-            const body = new THREE.Mesh(bodyGeo, bodyMat);
-            body.position.set(0, 0.35, 0);
+            // Cute Arwa Avatar (Stylized low-poly avatar with hijab / cute outfit)
+            const bodyMat = new THREE.MeshStandardMaterial({ color: 0x7c3aed, roughness: 0.6 }); // Purple hoodie
+            const body = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.7, 0.3), bodyMat);
+            body.position.set(0, 0.55, 0);
             body.castShadow = true;
-            petMesh.add(body);
+            characterGroup.add(body);
 
-            const headGeo = new THREE.SphereGeometry(0.25, 16, 16);
-            const head = new THREE.Mesh(headGeo, bodyMat);
-            head.position.set(0, 0.7, 0.15);
+            // Cute Head & Hijab
+            const headMat = new THREE.MeshStandardMaterial({ color: 0xfbcfe8, roughness: 0.7 }); // Skin / Hijab tone
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 16), headMat);
+            head.position.set(0, 1.05, 0);
             head.castShadow = true;
-            petMesh.add(head);
+            characterGroup.add(head);
 
-            petMesh.position.set(0.8, 0, 0.5);
-            scene.add(petMesh);
+            // Cute little halo / flower crown accent on head
+            const crownMat = new THREE.MeshStandardMaterial({ color: 0xfde047 });
+            const crown = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.03, 8, 24), crownMat);
+            crown.rotation.x = Math.PI / 2;
+            crown.position.set(0, 1.22, 0);
+            characterGroup.add(crown);
+
+            characterGroup.position.set(charPosition.x, 0, charPosition.z);
+            scene.add(characterGroup);
         }
 
-        // --- Interaction & Controls ---
-        function playSound(freq1, freq2) {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
+        function buildPets() {
+            pets.forEach(p => {
+                const petGroup = new THREE.Group();
                 
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(freq1, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(freq2, audioCtx.currentTime + 0.1);
+                const meshMat = new THREE.MeshStandardMaterial({ 
+                    color: p.type === 'dog' ? 0xd97706 : p.type === 'cat' ? 0x94a3b8 : p.type === 'bird' ? 0x38bdf8 : 0xf472b6, 
+                    roughness: 0.7 
+                });
                 
-                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-                
-                osc.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.1);
-            } catch (e) {}
+                const body = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16, 16), meshMat);
+                body.position.set(0, 0.25, 0);
+                body.castShadow = true;
+                petGroup.add(body);
+
+                const head = new THREE.Mesh(new THREE.SphereGeometry(0.18, 16, 16), meshMat);
+                head.position.set(0, 0.52, 0.1);
+                head.castShadow = true;
+                petGroup.add(head);
+
+                petGroup.position.set(p.x, 0, p.z);
+                p.threeObj = petGroup;
+                scene.add(petGroup);
+            });
         }
+
+        function handleKey(e, isDown) {
+            const k = e.key.toLowerCase();
+            if (k === 'w' || k === 'arrowup') keys.w = isDown;
+            if (k === 'a' || k === 'arrowleft') keys.a = isDown;
+            if (k === 's' || k === 'arrowdown') keys.s = isDown;
+            if (k === 'd' || k === 'arrowright') keys.d = isDown;
+        }
+
+        function startMove(dir) { keys[dir] = true; }
+        function stopMove(dir) { keys[dir] = false; }
 
         function toggleLights() {
             playSound(400, 300);
@@ -395,137 +420,100 @@
                 scene.background.setHex(0xfcfbf9);
                 ambientLight.intensity = 0.65;
                 directionalLight.intensity = 0.9;
-                btn.innerText = "💡 Turn Off Lights";
-                textElement.innerText = "Lights are back on! Room is bright and cozy.";
+                btn.innerText = "💡 Lights Off";
+                textElement.innerText = "lights are back on cozy brightness restored cuteeee";
             } else {
                 scene.background.setHex(0x0e0c14);
                 ambientLight.intensity = 0.15;
                 directionalLight.intensity = 0.2;
-                btn.innerText = "💡 Turn On Lights";
-                textElement.innerText = "Lights are off. Enjoy the calm, relaxing nighttime ambiance.";
+                btn.innerText = "💡 Lights On";
+                textElement.innerText = "lights are off night ambiance is so peaceful cuteeee";
             }
-            hideNav();
         }
 
-        function switchPet() {
-            playSound(500, 700);
-            petTypeIndex = (petTypeIndex + 1) % petTypes.length;
-            spawnPet();
-            const textElement = document.getElementById('main-text');
-            textElement.innerText = `Say hello to your cute little ${petNames[petTypeIndex]} (${petEmojis[petTypeIndex]})! Tap it to play.`;
-            hideNav();
+        function resetPosition() {
+            playSound(500, 600);
+            charPosition.x = 0;
+            charPosition.z = 0;
+            document.getElementById('main-text').innerText = "returned to the center of the house cuteeee";
         }
 
-        function interactPet() {
+        function playSound(f1, f2) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.frequency.setValueAtTime(f1, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(f2, ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.12, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.1);
+            } catch (e) {}
+        }
+
+        function interactWithNearbyPet() {
+            if (!activeNearbyPet) return;
             playSound(600, 900);
             const textElement = document.getElementById('main-text');
-            const pet = petNames[petTypeIndex];
-            
-            let noise = "Woof woof!";
-            if(pet === 'Kitty') noise = "Purrrr meow~";
-            if(pet === 'Birdie') noise = "Chirp chirp! YOU GOT THIS ARWA!";
-            if(pet === 'Bunny') noise = "Boop! Soft hops!";
-
-            textElement.innerText = `${petEmojis[petTypeIndex]} ${noise} Your furry little companion is keeping you company in 3D!`;
-            hideNav();
+            textElement.innerText = `${activeNearbyPet.emoji} ${activeNearbyPet.msg} cuteeee`;
         }
 
-        function interactBed() {
-            playSound(350, 450);
-            const textElement = document.getElementById('main-text');
-            textElement.innerText = "Arwa, a completely made, cozy pink and white bed is waiting for you whenever you need to rest and reset your mind.";
-            hideNav();
-        }
+        function updateGame() {
+            let moved = false;
+            let dx = 0, dz = 0;
 
-        function openComputer() {
-            playSound(500, 800);
-            viewingComputer = true;
-            currentMessageIndex = 0;
-            updateComputerDisplay();
-            document.getElementById('nav-container').style.display = 'flex';
-            document.getElementById('prev-btn').style.display = 'inline-block';
-            document.getElementById('next-btn').style.display = 'inline-block';
-        }
+            if (keys.w) { dz -= charSpeed; moved = true; }
+            if (keys.s) { dz += charSpeed; moved = true; }
+            if (keys.a) { dx -= charSpeed; moved = true; }
+            if (keys.d) { dx += charSpeed; moved = true; }
 
-        function updateComputerDisplay() {
-            const textElement = document.getElementById('main-text');
-            textElement.style.opacity = 0;
-            setTimeout(() => {
-                textElement.innerText = `[PC Screen - Message ${currentMessageIndex + 1}/${computerMessages.length}]\n\n"${computerMessages[currentMessageIndex]}"`;
-                textElement.style.opacity = 1;
-            }, 100);
-        }
+            if (moved) {
+                let newX = charPosition.x + dx;
+                let newZ = charPosition.z + dz;
 
-        function nextMessage() {
-            playSound(700, 850);
-            currentMessageIndex = (currentMessageIndex + 1) % computerMessages.length;
-            updateComputerDisplay();
-        }
+                // Simple wall collision bounding box check
+                if (newX > minX && newX < maxX) charPosition.x = newX;
+                if (newZ > minZ && newZ < maxZ) charPosition.z = newZ;
 
-        function prevMessage() {
-            playSound(850, 700);
-            currentMessageIndex = (currentMessageIndex - 1 + computerMessages.length) % computerMessages.length;
-            updateComputerDisplay();
-        }
-
-        function hideNav() {
-            viewingComputer = false;
-            document.getElementById('nav-container').style.display = 'none';
-        }
-
-        // --- Raycasting for 3D Object clicks ---
-        const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
-
-        function onClick(event) {
-            // Only trigger if it wasn't a drag
-            const rect = renderer.domElement.getBoundingClientRect();
-            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(scene.children, true);
-
-            if (intersects.length > 0) {
-                let obj = intersects[0].object;
-                // Traverse up to find group with userData
-                while (obj && !obj.userData.type && obj.parent) {
-                    obj = obj.parent;
-                }
-
-                if (obj && obj.userData.type) {
-                    if (obj.userData.type === 'bed') interactBed();
-                    else if (obj.userData.type === 'pc') openComputer();
-                    else if (obj.userData.type === 'pet') interactPet();
-                }
+                // Update character rotation towards movement direction
+                charRotation = Math.atan2(dx, dz);
+                characterGroup.rotation.y = charRotation;
             }
-        }
 
-        // --- Orbit controls for touch and mouse drag ---
-        function onPointerDown(e) {
-            isDragging = true;
-            previousMousePosition = { x: e.clientX, y: e.clientY };
-        }
+            characterGroup.position.set(charPosition.x, 0, charPosition.z);
 
-        function onPointerMove(e) {
-            if (!isDragging) return;
+            // Smooth third person camera following character from behind and above
+            const targetCamX = charPosition.x - Math.sin(charRotation) * 4;
+            const targetCamZ = charPosition.z - Math.cos(charRotation) * 4;
+            
+            camera.position.x += (targetCamX - camera.position.x) * 0.1;
+            camera.position.y += (3.5 - camera.position.y) * 0.1;
+            camera.position.z += (targetCamZ - camera.position.z) * 0.1;
+            camera.lookAt(charPosition.x, charPosition.y + 0.8, charPosition.z);
 
-            const deltaX = e.clientX - previousMousePosition.x;
-            const deltaY = e.clientY - previousMousePosition.y;
+            // Check distance to pets for interaction prompt
+            let nearest = null;
+            let minDist = 1.4;
 
-            cameraAngleY -= deltaX * 0.008;
-            cameraAngleX += deltaY * 0.008;
+            pets.forEach(p => {
+                const dist = Math.hypot(charPosition.x - p.x, charPosition.z - p.z);
+                if (dist < minDist) {
+                    nearest = p;
+                }
+            });
 
-            // Clamp vertical angle to keep room upright
-            cameraAngleX = Math.max(0.05, Math.min(Math.PI / 2 - 0.05, cameraAngleX));
-
-            updateCameraPosition();
-
-            previousMousePosition = { x: e.clientX, y: e.clientY };
-        }
-
-        function onPointerUp() {
-            isDragging = false;
+            const promptBtn = document.getElementById('interact-prompt');
+            if (nearest) {
+                activeNearbyPet = nearest;
+                promptBtn.style.display = 'inline-block';
+                promptBtn.innerText = `pet ${nearest.name} ${nearest.emoji} cuteeee`;
+            } else {
+                activeNearbyPet = null;
+                promptBtn.style.display = 'none';
+            }
         }
 
         function onWindowResize() {
@@ -537,6 +525,7 @@
 
         function animate() {
             requestAnimationFrame(animate);
+            updateGame();
             renderer.render(scene, camera);
         }
     </script>
